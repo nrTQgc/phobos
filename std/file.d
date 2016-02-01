@@ -2395,6 +2395,9 @@ version (OSX)
 else version (FreeBSD)
     private extern (C) int sysctl (const int* name, uint namelen, void* oldp,
         size_t* oldlenp, const void* newp, size_t newlen);
+else version (NetBSD)
+    private extern (C) int sysctl (const int* name, uint namelen, void* oldp,
+        size_t* oldlenp, const void* newp, size_t newlen);
 
 /**
  * Returns the full path of the current executable.
@@ -2463,6 +2466,10 @@ else version (FreeBSD)
         errnoEnforce(result == 0);
 
         return buffer.assumeUnique;
+    }
+    else version (NetBSD)
+    {
+        return readLink("/proc/self/exe");
     }
     else version (Solaris)
     {

@@ -717,7 +717,8 @@ ireal sin(ireal y) @safe pure nothrow @nogc
 @safe pure nothrow @nogc unittest
 {
   assert(sin(0.0+0.0i) == 0.0);
-  assert(sin(2.0+0.0i) == sin(2.0L) );
+  assert(sin(2.0+0.0i).im == 0.0L );
+  assert(feqrel(sin(2.0+0.0i).re, sin(2.0L)) >  real.mant_dig-10 );
 }
 
 /***********************************
@@ -742,7 +743,8 @@ real cos(ireal y) @safe pure nothrow @nogc
 @safe pure nothrow @nogc unittest
 {
     assert(cos(0.0+0.0i)==1.0);
-    assert(cos(1.3L+0.0i)==cos(1.3L));
+    assert(cos(1.3L+0.0i).im == 0.0L );
+    assert(feqrel(cos(1.3L+0.0i).re, cos(1.3L)) >= real.mant_dig-12 );
     assert(cos(5.2Li)== cosh(5.2L));
 }
 
@@ -964,7 +966,7 @@ Lret: {}
 
 unittest
 {
-    assert(equalsDigit(tan(PI / 3), std.math.sqrt(3.0), useDigits));
+    assert(feqrel(tan(PI / 3), std.math.sqrt(3.0)) > real.mant_dig-15 );
 }
 
 /***************
@@ -2334,8 +2336,9 @@ creal expi(real y) @trusted pure nothrow @nogc
 
 ///
 @safe pure nothrow @nogc unittest
-{
-    assert(expi(1.3e5L) == cos(1.3e5L) + sin(1.3e5L) * 1i);
+{    
+    assert(feqrel(expi(1.3e5L).re, (cos(1.3e5L) + sin(1.3e5L) * 1i).re)> real.mant_dig-15);
+    assert(feqrel(expi(1.3e5L).im, (cos(1.3e5L) + sin(1.3e5L) * 1i).im)> real.mant_dig-15);
     assert(expi(0.0L) == 1L + 0.0Li);
 }
 
@@ -3390,8 +3393,8 @@ real log2(real x) @safe pure nothrow @nogc
 ///
 unittest
 {
-    // check if values are equal to 19 decimal digits of precision
-    assert(equalsDigit(log2(1024.0L), 10, 19));
+    // check if values are equal except last 10 mantis bits
+    assert(feqrel(log2(1024.0L), 10) > real.mant_dig-10);
 }
 
 /*****************************************
